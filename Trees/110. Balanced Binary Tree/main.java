@@ -26,13 +26,18 @@ class TreeNode {
 
 class Solution {
 
-    public int diameterOfBinaryTree(TreeNode root) {
-
-        int thisDiameter = maxDepth(root.left) + maxDepth(root.right);
-        int leftDiamter = root.left == null ? 0 : diameterOfBinaryTree(root.left);
-        int rightDiamter = root.right == null ? 0 : diameterOfBinaryTree(root.right);
-
-        return max(thisDiameter, max(leftDiamter, rightDiamter));
+    public boolean isBalanced(TreeNode root) {
+        if (root == null)
+            return true;
+        int lh = root.left == null ? 0 : maxDepth(root.left);
+        int rh = root.right == null ? 0 : maxDepth(root.right);
+        switch (lh - rh) {
+            case (0):
+            case (-1):
+            case (1):
+                return isBalanced(root.left) && isBalanced(root.right);
+        }
+        return false;
     }
 
     public int max(int a, int b) {
