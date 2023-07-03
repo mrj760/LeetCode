@@ -32,10 +32,10 @@ class KthLargest {
 
         public String toString() {
             String s = "{ ";
-            int idx = 0;
+            int k = 1;
             Node trav = this;
             while (trav != null) {
-                s += "[" + idx++ + "," + trav.val + "] ";
+                s += "[k" + k++ + "," + trav.val + "] ";
                 trav = trav.next;
             }
             s += "}";
@@ -43,15 +43,11 @@ class KthLargest {
         }
     }
 
-    Node head, knode;
+    Node head;
     int k;
 
     public KthLargest(int k, int[] nums) {
         this.k = k;
-        // if (nums.length == 0) {
-        //     this.kval = 0;
-        //     return;
-        // }
         if (nums.length == 0) {
             return;
         }
@@ -62,64 +58,56 @@ class KthLargest {
     }
 
     public int add(int val) {
-        Main.pl("Adding " + val);
+        //Main.pl("Adding " + val);
         if (head == null) {
-            Main.pl("Create head");
             head = new Node(val);
-            knode = head;
+            //Main.pl(head.toString());
+            //Main.pl(val);
             return val;
         }
-        Main.pl("===Before===\n" + head.toString());
+        //Main.pl(head.toString());
         Node trav = head;
-        int ktracker = 1;
-        while (true) {
-            if (val > trav.val) {
-                Main.pl("larger");
-                Node before = new Node(val);
-                if (trav == head) {
-                    head = before;
-                } else {
-                    trav.prev.next = before;
-                }
-                trav.prev = before;
-                if (ktracker == k) {
-                    Main.pl("inserting before knode");
-                    knode = before;
-                } else {
-                    before.next = trav;
-                    trav = knode;
-                    for (int i = k; i > ktracker; --i) {
-                        if (trav.prev == null) {
-                            Main.pl(head.toString() + " KNode " + knode.val + "\n===End===");
-                            return knode.val;
-                        }
-                        trav = trav.prev;
-                    }
-                    knode = trav;
-                    knode.next = null;
-                }
-                Main.pl(head.toString() + " KNode " + knode.val + "\n===End===");
-                return knode.val;
-            }
-            if (ktracker++ == k) {
-                Main.pl("reached k " + k);
-                if (val > trav.val) {
-                    Main.pl("replace val");
-                    trav.val = val;
-                }
-                Main.pl(head.toString() + " KNode " + knode.val + "\n===End===");
-                return knode.val;
+        int ktracker = 0;
+        while (val < trav.val) {
+            if (++ktracker == k) {
+                //Main.pl(head.toString());
+                //Main.pl(trav.val);
+                return trav.val;
             }
             if (trav.next == null) {
-                Main.pl("next is null");
                 trav.next = new Node(val);
-                knode = trav.next;
-                knode.prev = trav;
-                Main.pl(head.toString() + " KNode " + knode.val + "\n===End===");
+                trav.next.prev = trav;
+                //Main.pl(head.toString());
+                //Main.pl(val);
                 return val;
             }
-            Main.pl("next");
             trav = trav.next;
         }
+        Node before = new Node(val);
+        if (trav == head) {
+            before.next = trav;
+            head = before;
+            trav.prev = before;
+        } else {
+            before.prev = trav.prev;
+            trav.prev.next = before;
+            before.next = trav;
+            trav.prev = before;
+        }
+        // ktracker--;
+        while (++ktracker < k) {
+            if (trav.next == null) {
+                //Main.pl("next null, k" + ++ktracker + " " + trav.val);
+                //Main.pl(head.toString());
+                //Main.pl(trav.val);
+                return trav.val;
+            }
+            trav = trav.next;
+        }
+        //Main.pl(trav.val + " k" + ktracker);
+        trav.prev.next = null;
+        //Main.pl(head.toString());
+        //Main.pl(trav.prev.val);
+        return trav.prev.val;
     }
 }
